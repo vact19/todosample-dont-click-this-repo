@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="https://unpkg.com/vue@next"></script>
+    <style>
+        table {
+            width: auto;
+            margin: auto;
+        }
+
+        th {
+            width: auto;
+            height: 50px;
+            margin: auto;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div id="app"><h1>할 일</h1>
+    <button type="button" v-on:click="getTodos()"> 불러오기 </button>
+    <table>
+        <tr>
+            <th>끝났니</th>
+            <th>ID</th>
+            <th>할일</th>
+            <th>최종수정시간</th>
+            <th>최종수정한놈</th>
+        </tr>
+        <tr v-for="todo in todos" v-bind:key="todo.id">
+            <td>{{todo.done}}</td>
+            <td>{{todo.id}}</td>
+            <td>{{ todo.content }}</td>
+            <td>{{ todo.lastModifiedTime}}</td>
+            <td>{{ todo.lastModifiedBy}}</td>
+        </tr>
+    </table>
+</div>
+
+
+
+</body>
+<script type="text/javascript">
+    let app = {
+    name: "MyTodo",
+    data() {
+        return {
+            todos: [],
+            newTodo: {title:''}
+        }
+    },
+    methods: {
+        addTodo: function () {
+            fetch('/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({title: this.title}),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            this.title = "";
+        },
+        getTodos: function () {
+            fetch("/todos")
+                .then(response => response.json())
+                .then(data => {
+                    this.todos = data.data.todos;
+                });
+        },
+    }
+};
+Vue.createApp(app).mount("#app"); </script>
+</html>
